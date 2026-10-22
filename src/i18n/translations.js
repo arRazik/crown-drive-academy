@@ -21,6 +21,7 @@ export const translations = {
     brand: {
       name: 'CROWN DRIVE ACADEMY',
       tagline: 'منصتك لتعلّم السياقة والنجاح في الامتحان',
+      version: 'الإصدار',
     },
 
     lang: { ar: 'العربية', fr: 'Français', label: 'اللغة' },
@@ -248,6 +249,7 @@ export const translations = {
     brand: {
       name: 'CROWN DRIVE ACADEMY',
       tagline: 'Votre plateforme pour apprendre à conduire et réussir l\'examen',
+      version: 'Version',
     },
 
     lang: { ar: 'العربية', fr: 'Français', label: 'Langue' },

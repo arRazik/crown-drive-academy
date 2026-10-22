@@ -3,12 +3,14 @@ import { useI18n } from '../../i18n/useI18n';
 import Icon from '../ui/Icon';
 import Logo from '../layout/Logo';
 import LanguageSwitch from '../layout/LanguageSwitch';
+import { useAppVersion } from '../../useAppVersion';
 
 const FEATURES = ['exams', 'lessons', 'stats'];
 
 // تخطيط صفحتي الدخول والتسجيل: لوحة العلامة (يمين/يسار حسب اللغة) + النموذج
 function AuthLayout({ title, subtitle, children }) {
   const { t } = useI18n();
+  const version = useAppVersion();
 
   return (
     <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
@@ -41,6 +43,12 @@ function AuthLayout({ title, subtitle, children }) {
 
         <p className="relative text-sm text-side-ink">
           © {new Date().getFullYear()} {t('brand.name')}
+          {version && (
+            <>
+              {' · '}
+              {t('brand.version')} <bdi>{version}</bdi>
+            </>
+          )}
         </p>
       </section>
 

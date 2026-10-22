@@ -6,6 +6,7 @@ import { logoutCandidate } from '../loginPage/Candidatesapi';
 import Icon from '../ui/Icon';
 import Logo from './Logo';
 import LanguageSwitch from './LanguageSwitch';
+import { useAppVersion } from '../../useAppVersion';
 
 const NAV_ITEMS = [
   { to: '/statistique', icon: 'chart', labelKey: 'nav.dashboard' },
@@ -17,6 +18,7 @@ function Sidebar() {
   const { t } = useI18n();
   const navigate = useNavigate();
   const user = getStoredUser();
+  const version = useAppVersion();
 
   async function handleLogout() {
     try {
@@ -77,6 +79,12 @@ function Sidebar() {
             <Icon name="logout" className="h-5 w-5 rtl:-scale-x-100" />
           </button>
         </div>
+
+        {version && (
+          <p className="text-center text-xs text-side-ink">
+            {t('brand.version')} <bdi>{version}</bdi>
+          </p>
+        )}
       </div>
     </aside>
   );

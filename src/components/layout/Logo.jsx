@@ -1,15 +1,13 @@
 import React from 'react';
-import Icon from '../ui/Icon';
+import { useI18n } from '../../i18n/useI18n';
+import logoUrl from '../../assets/logo.png';
 
-// شعار التطبيق: تاج ذهبي داخل مربع (اللون من theme.css)
+// شعار المدرسة (الصورة src/assets/logo.png بخلفية شفافة). size: md للشريط الجانبي، lg للوحة الدخول
+const SIZES = { md: 'h-14', lg: 'h-28' };
+
 function Logo({ size = 'md' }) {
-  const box = size === 'lg' ? 'h-16 w-16 rounded-2xl' : 'h-11 w-11 rounded-xl';
-  const icon = size === 'lg' ? 'h-9 w-9' : 'h-6 w-6';
-  return (
-    <span className={`flex ${box} shrink-0 items-center justify-center bg-accent text-side shadow-lg`}>
-      <Icon name="crown" className={icon} />
-    </span>
-  );
+  const { t } = useI18n();
+  return <img src={logoUrl} alt={t('brand.name')} className={`${SIZES[size]} w-auto shrink-0`} draggable={false} />;
 }
 
 export default Logo;

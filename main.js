@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, Menu, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, shell } from 'electron';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -93,6 +93,7 @@ function createWindow(url) {
     backgroundColor: '#ffffff',
     title: APP_NAME,
     webPreferences: {
+      preload: path.join(import.meta.dirname, 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
@@ -158,6 +159,7 @@ if (!app.requestSingleInstanceLock()) {
 
   app.whenReady().then(async () => {
     Menu.setApplicationMenu(null);
+    ipcMain.handle('app:version', () => app.getVersion());
     if (!isDev) {
       if (!fs.existsSync(path.join(distDir, 'index.html'))) {
         dialog.showErrorBox(APP_NAME, `لم يتم العثور على ملفات الواجهة في:\n${distDir}\nشغّل: npm run build`);
