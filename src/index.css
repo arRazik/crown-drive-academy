@@ -1,0 +1,59 @@
+@import "tailwindcss";
+@import "./theme.css";
+
+html,
+body {
+  margin: 0;
+  background: var(--color-page);
+  color: var(--color-ink);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* تطبيق سطح مكتب: لا يمكن تحديد أي نص أو عنصر ولا سحب الصور */
+*,
+*::before,
+*::after {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* حقول الإدخال تبقى قابلة للكتابة والتحديد وإلا لا يعمل تسجيل الدخول */
+input,
+textarea,
+[contenteditable='true'] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* شريط تمرير رفيع بشكل تطبيقات سطح المكتب */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-line-strong);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-faint);
+  background-clip: content-box;
+}
+
+/* أعمدة الصوت في عدّاد الاختبار أثناء قراءة السؤال */
+@keyframes soundbar {
+  0%, 100% { height: 25%; }
+  50% { height: 100%; }
+}

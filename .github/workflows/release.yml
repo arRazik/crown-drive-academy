@@ -1,0 +1,31 @@
+# كل دفع (push) إلى main يبني إصداراً جديداً وينشره في GitHub Releases؛
+# والتطبيق المثبّت على الأجهزة يكتشفه وينزّله تلقائياً (electron-updater).
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      # رقم الإصدار يزيد مع كل تشغيل (1.0.1 ثم 1.0.2 ...) ليعتبره التطبيق تحديثاً
+      - name: Build and publish release
+        run: npx vite build && npx electron-builder --linux AppImage --publish always -c.extraMetadata.version=1.0.${{ github.run_number }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
