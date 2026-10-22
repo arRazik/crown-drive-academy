@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { fetchReviewAudio, fetchReviewWords } from './MockExamApi';
+import { fetchReviewAudio, fetchReviewWordsProgress } from './MockExamApi';
 import { useI18n } from '../../i18n/useI18n';
 import { EXPLANATION_DEPTH_TONE } from '../../theme/status';
 import { Badge } from '../ui/ui';
@@ -112,6 +112,9 @@ function TypingDots() {
   );
 }
 
+// كل كم مللي ثانية نسأل السيرفر عن الكلمات الجديدة أثناء التوليد
+const WORDS_POLL_MS = 400;
+
 function ReviewModal({ items, index, testId, ttsEnabled, visible, onNavigate, onClose, onReady }) {
   const { t, dir, enumLabel } = useI18n();
   const item = items[index];
@@ -135,10 +138,11 @@ function ReviewModal({ items, index, testId, ttsEnabled, visible, onNavigate, on
 
   useEffect(() => stop, [stop]);
 
-  function followAudio(audio, timings, requestId) {
+  // getWords تعيد أحدث كلمات معروفة (تتزايد أثناء التوليد)
+  function followAudio(audio, getWords, requestId) {
     const tick = () => {
       if (requestId !== requestRef.current) return;
-      setRevealIndex(wordIndexAt(timings, audio.currentTime));
+      setRevealIndex(wordIndexAt(getWords(), audio.currentTime));
       if (!audio.paused && !audio.ended) rafRef.current = requestAnimationFrame(tick);
     };
     cancelAnimationFrame(rafRef.current);
@@ -159,31 +163,51 @@ function ReviewModal({ items, index, testId, ttsEnabled, visible, onNavigate, on
       setStatus('ended');
     };
 
-    // التوقيت يُجلب بالتوازي مع البث؛ الكلمات المقروءة قبل وصوله تظهر دفعة عند وصوله
+    // الكلمات تُستطلع تدريجياً بالتوازي مع البث: تظهر الكلمات مع الصوت حتى لو احتاج
+    // التوليد ثوانيَ طويلة (النماذج الأعلى جودة)، بدل انتظار اكتماله لعرض أول كلمة
     const cached = wordsCache.current.get(questionId);
-    const wordsPromise = cached
-      ? Promise.resolve(cached)
-      : fetchReviewWords(testId, questionId)
-          .then((w) => {
-            wordsCache.current.set(questionId, w);
-            return w;
-          })
-          .catch(() => null);
+    const latest = { words: cached || [] };
+    if (cached) setWords(cached);
+    let cancelled = false;
 
-    await audio.play();
+    const pollWords = async () => {
+      for (;;) {
+        let progress;
+        try {
+          progress = await fetchReviewWordsProgress(testId, questionId);
+        } catch {
+          return false;
+        }
+        if (cancelled || requestId !== requestRef.current) return true;
+        if (progress.words.length > latest.words.length) {
+          latest.words = progress.words;
+          setWords(progress.words);
+        }
+        if (progress.done) {
+          if (progress.failed) return false;
+          wordsCache.current.set(questionId, progress.words);
+          return true;
+        }
+        await new Promise((resolve) => setTimeout(resolve, WORDS_POLL_MS));
+        if (cancelled || requestId !== requestRef.current) return true;
+      }
+    };
+    const polling = cached ? Promise.resolve(true) : pollWords();
+
+    try {
+      await audio.play();
+    } catch (err) {
+      cancelled = true; // فشل البث → نوقف الاستطلاع قبل الرجوع لصوت المتصفح
+      throw err;
+    }
     if (requestId !== requestRef.current) return;
     setStatus('playing');
     onReady();
+    followAudio(audio, () => latest.words, requestId);
 
-    const timings = await wordsPromise;
+    const ok = await polling;
     if (requestId !== requestRef.current) return;
-    if (!timings?.length) {
-      setShowAll(true); // بدون توقيت: نعرض النص كاملاً مع الصوت
-      return;
-    }
-    setWords(timings);
-    if (audio.ended) setRevealIndex(timings.length - 1);
-    else followAudio(audio, timings, requestId);
+    if (!ok && latest.words.length === 0) setShowAll(true); // بدون توقيت: نعرض النص كاملاً مع الصوت
   }
 
   async function playBrowser(requestId) {

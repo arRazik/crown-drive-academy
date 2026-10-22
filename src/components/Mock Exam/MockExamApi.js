@@ -34,10 +34,15 @@ export async function fetchReviewAudio(testId, questionId) {
   return response.data.stream_url;
 }
 
-// توقيت كل كلمة [{ text, start, end, line }] للتلوين المباشر
-export async function fetchReviewWords(testId, questionId) {
-  const response = await mockExamApi.post(`/mockexam/${testId}/review/${questionId}/words`);
-  return response.data.words;
+// الكلمات المعروفة حتى الآن { words: [{ text, start, end, line }], done, failed } — تُستطلع
+// تدريجياً أثناء التوليد فتُكتب الكلمات مع الصوت بدل انتظار نهاية التوليد.
+// سيرفر قديم بلا دعم progress يرد { words } كاملة بدون done، فنعتبرها منتهية.
+export async function fetchReviewWordsProgress(testId, questionId) {
+  const response = await mockExamApi.post(`/mockexam/${testId}/review/${questionId}/words`, null, {
+    params: { progress: 1 },
+  });
+  const { words, done, failed } = response.data;
+  return { words: words || [], done: done ?? true, failed: Boolean(failed) };
 }
 
 export default mockExamApi;
