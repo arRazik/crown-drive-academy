@@ -29,3 +29,25 @@ jobs:
         run: npx vite build && npx electron-builder --linux AppImage --publish always -c.extraMetadata.version=1.0.${{ github.run_number }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # نسخة Windows: تعمل بعد Linux حتى لا يحاول الاثنان إنشاء نفس الإصدار معاً.
+  # التثبيت لكل مستخدم (بدون صلاحيات مدير) فيعمل التحديث التلقائي بدون إزعاج.
+  release-windows:
+    needs: release-linux
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+        shell: bash
+
+      - name: Build and publish Windows installer
+        shell: bash
+        run: npx vite build && npx electron-builder --win nsis --publish always -c.extraMetadata.version=1.0.${{ github.run_number }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

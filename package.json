@@ -30,13 +30,19 @@
       "category": "Education"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "build/icon.png",
+      "artifactName": "CROWN-DRIVE-ACADEMY-Setup-${version}.${ext}"
     },
     "publish": {
       "provider": "github",
       "owner": "arRazik",
       "repo": "crown-drive-academy",
       "releaseType": "release"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false
     }
   },
   "devDependencies": {
