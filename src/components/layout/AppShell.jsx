@@ -2,10 +2,12 @@ import React, { useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { ShellContext } from './shellContext';
+import { useActivityTracker } from '../../useActivityTracker';
 
 // غلاف الصفحات المحمية: شريط جانبي ثابت + منطقة محتوى بعرض كامل.
 // في وضع التركيز (أثناء الاختبار) يختفي الشريط ويأخذ المحتوى الشاشة كلها.
 function AppShell() {
+  useActivityTracker();
   const [focus, setFocus] = useState(false);
   const value = useMemo(() => ({ setFocus }), []);
 

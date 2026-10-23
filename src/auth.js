@@ -47,9 +47,24 @@ export function getStoredUser() {
   }
 }
 
+// فتح الاختبار المعيَّن مباشرة يحدث مرة لكل دخول: نربط العلامة بتوكن الجلسة، فيتكرر عند دخول جديد
+function autoExamKey(assignmentId) {
+  const token = sessionStorage.getItem('token') || '';
+  return `${token.slice(-16)}:${assignmentId}`;
+}
+
+export function wasAutoExamShown(assignmentId) {
+  return sessionStorage.getItem('auto_exam_shown') === autoExamKey(assignmentId);
+}
+
+export function markAutoExamShown(assignmentId) {
+  sessionStorage.setItem('auto_exam_shown', autoExamKey(assignmentId));
+}
+
 export function clearSession() {
   sessionStorage.removeItem('token');
   sessionStorage.removeItem('user');
+  sessionStorage.removeItem('auto_exam_shown');
 }
 
 export function isPublicPath(pathname) {

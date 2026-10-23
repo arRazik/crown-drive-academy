@@ -1,9 +1,8 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../../config';
 
 
-// Adaptez cette URL à votre backend (ex: process.env.REACT_APP_API_URL en CRA,
-// ou import.meta.env.VITE_API_URL en Vite).
-const API_BASE_URL = 'http://localhost:3001';
+// عنوان السيرفر يُضبط في src/config.js (المكان الوحيد).
 
 
 const candidatesApi = axios.create({
@@ -31,7 +30,7 @@ candidatesApi.interceptors.request.use((config) => {
  
 export async function loginCandidate({ national_id, password }) {
   const response = await candidatesApi.post(
-    'http://localhost:3001/alogin/login',
+    '/alogin/login',
     { national_id, password }
   );
 
@@ -54,7 +53,7 @@ export async function loginCandidate({ national_id, password }) {
  * Inscrit un nouveau candidat puis le connecte automatiquement.
  */
 export async function registerCandidate({ national_id, password, full_name, phone, license_category_id }) {
-  const response = await candidatesApi.post('http://localhost:3001/alogin/register', {
+  const response = await candidatesApi.post('/alogin/register', {
     national_id,
     password,
     full_name,
@@ -71,17 +70,17 @@ export async function registerCandidate({ national_id, password, full_name, phon
 }
 
 export async function logoutCandidate() {
-  const response = await candidatesApi.post('http://localhost:3001/alogin/logout');
+  const response = await candidatesApi.post('/alogin/logout');
   return response.data;
 }
 
 export async function fetchCurrentCandidate() {
-  const response = await candidatesApi.get('http://localhost:3001/alogin/candidates/me');
+  const response = await candidatesApi.get('/alogin/candidates/me');
   return response.data;
 }
 
 export async function fetchLicenseCategories() {
-  const response = await candidatesApi.get('http://localhost:3001/alogin/license-categories');
+  const response = await candidatesApi.get('/alogin/license-categories');
   return response.data.license_categories;
 }
 

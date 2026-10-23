@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchDashboardOverview } from './DashboardApi';
+import { markAutoExamShown, wasAutoExamShown } from '../../auth';
 import { useI18n } from '../../i18n/useI18n';
 import { apiErrorMessage } from '../../i18n/apiErrors';
 import { describeNextStep } from '../../i18n/nextStep';
@@ -24,6 +25,13 @@ function Statistique() {
     setPhase('loading');
     try {
       const data = await fetchDashboardOverview();
+      // اختبار نهائي عيّنه المدرّب: يُفتح مباشرة عند دخول المترشح (مرة لكل دخول)
+      const pending = data.pending_assignment;
+      if (pending?.kind === 'final_mock' && !wasAutoExamShown(pending.id)) {
+        markAutoExamShown(pending.id);
+        navigate('/mock-exam', { replace: true, state: { autoStart: true } });
+        return;
+      }
       setOverview(data);
       setPhase('ready');
     } catch (err) {
@@ -35,7 +43,7 @@ function Statistique() {
   if (phase === 'loading') return <LoadingState />;
   if (phase === 'error') return <ErrorState message={errorMessage} onRetry={load} />;
 
-  const { candidate, attempts, category_stats, latest_test, recent_tests, next_step } = overview;
+  const { candidate, attempts, category_stats, latest_test, recent_tests, next_step, pending_assignment: pending } = overview;
   const nextStep = describeNextStep(t, name, overview);
 
   return (
@@ -44,6 +52,26 @@ function Statistique() {
         title={t('dashboard.welcome', { name: candidate.full_name })}
         subtitle={t('dashboard.subtitle')}
       />
+
+      {/* ===== سلسلة عيّنها المدرّب ===== */}
+      {pending && (
+        <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-accent-line bg-accent-soft p-5">
+          <div>
+            <p className="font-extrabold text-accent-ink">
+              {t(pending.kind === 'final_mock' ? 'dashboard.assignment.finalTitle' : 'dashboard.assignment.nextTitle', {
+                n: pending.series_number,
+              })}
+            </p>
+            <p className="mt-0.5 text-sm text-ink-soft">
+              {t(pending.kind === 'final_mock' ? 'dashboard.assignment.finalText' : 'dashboard.assignment.nextText')}
+            </p>
+          </div>
+          <Button variant="accent" onClick={() => navigate('/mock-exam', { state: { autoStart: true } })}>
+            {pending.started_test_id ? t('dashboard.assignment.resume') : t('dashboard.assignment.start')}
+            <Icon name="chevron" flip />
+          </Button>
+        </section>
+      )}
 
       {/* ===== الخطوة التالية ===== */}
       <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-hero-from to-hero-to p-8 text-on-dark shadow-card">

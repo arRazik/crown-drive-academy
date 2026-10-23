@@ -8,7 +8,7 @@ import ReviewModal from './ReviewModal';
 // (أخضر = صحيح، أحمر = خاطئ). النقر على رقم يفتح نافذة الشرح؛ للأسئلة الخاطئة
 // يبدأ الصوت مباشرة والنص يُكتب مع الصوت (ReviewModal).
 
-function ExamResult({ result, testId, onRestart }) {
+function ExamResult({ result, series, testId, onRestart }) {
   const { t, name, enumLabel } = useI18n();
   const [openIndex, setOpenIndex] = useState(null);
   // النافذة تُركَّب فوراً (لتبدأ الصوت) لكنها لا تظهر حتى يبدأ الصوت فعلاً
@@ -34,7 +34,14 @@ function ExamResult({ result, testId, onRestart }) {
           {result.score_percent}%
         </p>
         <div>
-          <h1 className="text-2xl font-extrabold text-ink">{t('result.title')}</h1>
+          <h1 className="text-2xl font-extrabold text-ink">
+            {t('result.title')}
+            {series && (
+              <Badge tone="accent" className="ms-3 align-middle">
+                {t('exam.question.series', { n: series.number })}
+              </Badge>
+            )}
+          </h1>
           <p className="mt-1 text-ink-soft">
             {t('result.correctOutOf', { correct: result.correct_count, total: result.total_questions })}
           </p>

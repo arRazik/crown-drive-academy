@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { startMockExam, submitMockExam } from './MockExamApi';
 import { getStoredUser } from '../../auth';
 import { useI18n } from '../../i18n/useI18n';
@@ -40,6 +41,10 @@ function buildSteps(questions) {
 function MockExam() {
   const { t } = useI18n();
   const [candidate] = useState(getStoredUser);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const autoStartedRef = useRef(false);
+  const [series, setSeries] = useState(null);
   const [phase, setPhase] = useState('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -59,6 +64,15 @@ function MockExam() {
 
   // أثناء الاختبار يختفي الشريط الجانبي حتى لا يغادر المترشح الاختبار بالخطأ
   useShellFocus(phase === 'running' || phase === 'submitting');
+
+  // اختبار عيّنه المدرّب: يُفتح مباشرة عند الدخول (الانتقال يحمل state.autoStart مرة واحدة)
+  useEffect(() => {
+    if (!location.state?.autoStart || autoStartedRef.current) return;
+    autoStartedRef.current = true;
+    navigate(location.pathname, { replace: true, state: null });
+    handleStart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // سؤال جديد: الوقت كامل، والعداد ينتظر نهاية الصوت (يبدأ فوراً إن لم يكن للسؤال صوت)
   useEffect(() => {
@@ -107,6 +121,7 @@ function MockExam() {
     try {
       const data = await startMockExam({ testType: 'final_mock', count: EXAM_QUESTION_COUNT });
       setTestId(data.test_id);
+      setSeries(data.series || null);
       setQuestions(data.questions);
       setAnswers({});
       setQuestionTimes({});
@@ -167,7 +182,7 @@ function MockExam() {
   }
 
   const intro = [
-    { icon: 'exam', text: t('exam.intro.tileQuestions', { count: EXAM_QUESTION_COUNT }) },
+    { icon: 'exam', text: t('exam.intro.tileQuestions') },
     { icon: 'clock', text: t('exam.intro.tileTime', { seconds: QUESTION_TIME_LIMIT }) },
     { icon: 'trophy', text: t('exam.intro.tileResult') },
   ];
@@ -179,7 +194,7 @@ function MockExam() {
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight text-ink">{t('exam.intro.title')}</h1>
             <p className="mt-4 max-w-2xl text-lg leading-8 text-ink-soft">
-              {t('exam.intro.text', { name: candidate.full_name, count: EXAM_QUESTION_COUNT })}
+              {t('exam.intro.text', { name: candidate.full_name })}
             </p>
             <Button size="lg" onClick={handleStart} className="mt-8">
               {t('exam.intro.start')}
@@ -211,6 +226,7 @@ function MockExam() {
             step={currentStep}
             stepIndex={currentStepIndex}
             stepsCount={steps.length}
+            series={series}
             timeLeft={timeLeft}
             timeLimit={QUESTION_TIME_LIMIT}
             answeredCount={answeredCount}
@@ -225,7 +241,7 @@ function MockExam() {
         </div>
       )}
 
-      {phase === 'finished' && result && <ExamResult result={result} testId={testId} onRestart={handleStart} />}
+      {phase === 'finished' && result && <ExamResult result={result} series={result.series || series} testId={testId} onRestart={handleStart} />}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../../config';
 import { attachAuth } from '../../auth';
 
-const API_BASE_URL = 'http://localhost:3001';
 
 const mockExamApi = axios.create({
   baseURL: API_BASE_URL,

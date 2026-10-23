@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useI18n } from '../../i18n/useI18n';
-import { Alert, Button, Card, ProgressBar } from '../ui/ui';
+import { Alert, Badge, Button, Card, ProgressBar } from '../ui/ui';
 import ExamTimer from './ExamTimer';
 
 // المكوّن 2/3: عمود السؤال الحالي — العدّاد، شريط التقدم، الصورة/الصوت، النص، والتنقل
@@ -8,6 +8,7 @@ function ExamQuestion({
   step,
   stepIndex,
   stepsCount,
+  series,
   timeLeft,
   timeLimit,
   answeredCount,
@@ -57,6 +58,11 @@ function ExamQuestion({
         <div className="min-w-0 flex-1">
           <p className="text-lg font-extrabold text-ink">
             {t('exam.question.position', { current: stepIndex + 1, total: stepsCount })}
+            {series && (
+              <Badge tone="accent" className="ms-3 align-middle">
+                {t('exam.question.series', { n: series.number })}
+              </Badge>
+            )}
           </p>
           <p className="mt-1 text-sm text-ink-faint">
             {t('exam.question.answered', { answered: answeredCount, total: questionsCount })}

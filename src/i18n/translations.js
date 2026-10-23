@@ -129,6 +129,15 @@ export const translations = {
       recentTitle: 'آخر الاختبارات',
       noRecent: 'لا توجد اختبارات سابقة',
       startExam: 'بدء اختبار جديد',
+      // سلسلة عيّنها المدرّب
+      assignment: {
+        finalTitle: 'عيّن لك المدرّب اختباراً تجريبياً نهائياً: السلسلة {n}',
+        finalText: 'اجتزه الآن، وتظهر لك نتيجته وتصحيحه فور الانتهاء.',
+        nextTitle: 'عيّن لك المدرّب السلسلة {n} كاختبارك القادم',
+        nextText: 'ستكون هذه سلسلة اختبارك القادم.',
+        start: 'ابدأ الاختبار الآن',
+        resume: 'تابع الاختبار',
+      },
     },
 
     // نص "الخطوة التالية" يُبنى من بيانات الباك-إند (action + الصنف) ليظهر بلغة الواجهة
@@ -177,14 +186,15 @@ export const translations = {
       preparing: 'جارٍ تحضير الأسئلة...',
       intro: {
         title: 'الاختبار التجريبي',
-        text: 'مرحباً {name}، هذا اختبار تجريبي شامل مكوّن من {count} سؤالاً موزعة على مختلف أصناف الدروس. ستظهر لك النتيجة والنسب التفصيلية بعد الإنهاء مباشرة.',
+        text: 'مرحباً {name}، هذا اختبار تجريبي كامل من سلسلة أسئلة (يحدّدها لك مدرّبك أو تُختار عشوائياً). ستظهر لك النتيجة والنسب التفصيلية بعد الإنهاء مباشرة.',
         start: 'ابدأ الاختبار',
-        tileQuestions: '{count} سؤالاً',
+        tileQuestions: 'سلسلة أسئلة كاملة',
         tileTime: '{seconds} ثانية لكل سؤال',
         tileResult: 'نتيجة فورية مع الشرح',
       },
       question: {
         position: 'السؤال {current} من {total}',
+        series: 'السلسلة {n}',
         answered: 'أجبت على {answered} من {total}',
         imageAlt: 'صورة السؤال',
         listen: '▶ اضغط للاستماع إلى السؤال',
@@ -357,6 +367,14 @@ export const translations = {
       recentTitle: 'Derniers examens',
       noRecent: 'Aucun examen précédent',
       startExam: 'Nouvel examen',
+      assignment: {
+        finalTitle: 'Votre moniteur vous a assigné un examen blanc final : série {n}',
+        finalText: 'Passez-le maintenant, vous verrez le résultat et la correction dès la fin.',
+        nextTitle: 'Votre moniteur vous a assigné la série {n} comme prochain examen',
+        nextText: 'Ce sera la série de votre prochain examen.',
+        start: 'Commencer l\'examen maintenant',
+        resume: 'Reprendre l\'examen',
+      },
     },
 
     nextStep: {
@@ -404,14 +422,15 @@ export const translations = {
       preparing: 'Préparation des questions...',
       intro: {
         title: 'Examen blanc',
-        text: 'Bonjour {name}, voici un examen blanc complet de {count} questions réparties sur toutes les catégories de leçons. Votre résultat et vos pourcentages détaillés s\'afficheront dès la fin.',
+        text: 'Bonjour {name}, voici un examen blanc complet composé d\'une série de questions (choisie par votre moniteur ou tirée au hasard). Votre résultat et vos pourcentages détaillés s\'afficheront dès la fin.',
         start: 'Commencer l\'examen',
-        tileQuestions: '{count} questions',
+        tileQuestions: 'Une série complète de questions',
         tileTime: '{seconds} secondes par question',
         tileResult: 'Résultat immédiat avec explications',
       },
       question: {
         position: 'Question {current} sur {total}',
+        series: 'Série {n}',
         answered: '{answered} réponse(s) sur {total}',
         imageAlt: 'Image de la question',
         listen: '▶ Cliquez pour écouter la question',
