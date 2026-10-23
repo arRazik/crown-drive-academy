@@ -4,7 +4,7 @@
 // أو عند البناء: VITE_API_URL=https://... npm run build
 // ملاحظة: السيرفر يجب أن يسمح بأصل التطبيق http://localhost:5180 في CORS (موجود حالياً).
 // ============================================================================
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://autoserves.cloud';
 
 // تتبّع الوقت داخل التطبيق (يظهر للمدرّب في لوحة الإدارة):
 // نبضة كل 30 ثانية، وتُعدّ فترة "تفاعلاً" إن حدث نقر/كتابة/تمرير خلال آخر 60 ثانية.
